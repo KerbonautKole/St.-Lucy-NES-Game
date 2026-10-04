@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>St. Lucy's NES Game</title>
+    <!-- Use core JSNES framework library -->
     <script type="text/javascript" src="https://unpkg.com/jsnes@2/dist/jsnes.min.js"></script>
     <style>
         body {
@@ -13,19 +14,17 @@
             text-align: center;
             padding-top: 40px;
         }
+        /* Canvas container handles rendering scaling precisely */
         #nes {
             width: 512px;
-            height: 500px;
+            height: 480px;
             margin: 0 auto;
             border: 4px solid #333;
             background: black;
-            overflow: visible;
-        }
-        #nes canvas {
-        width: 100% !important;
-        height: 100% !important;
-        object-fit: contain; 
-        display: block;
+            display: block;
+            /* Ensures smooth pixel art rendering rather than bilinear blurring */
+            image-rendering: pixelated;
+            image-rendering: crisp-edges;
         }
         .controls {
             margin-top: 20px;
@@ -35,26 +34,96 @@
     </style>
 </head>
 <body>
+
     <h1>St. Lucy's Home for Girls Raised by Wolves: The NES Game</h1>
-    <div id="nes"></div>
+    
+    <!-- Changed container from a <div> to a precise native 256x240 <canvas> -->
+    <canvas id="nes" width="256" height="240"></canvas>
+
     <div class="controls">
-        <p><strong>Controls:</strong> Up, Down, Left, Right = Arrow Keys | Interact with Switches = X | Pause/Continue = Enter | Restart: Enter then press restart.</p>
+        <p><strong>Controls:</strong> Arrow Keys = D-Pad | X = A Button | Z = B Button | Enter = Start | Right Shift = Select</p>
     </div>
+
     <script>
         window.onload = function () {
-            var browser = new jsnes.Browser({
-                container: document.getElementById("nes"),
-                onError: function (e) {
-                    console.error("Emulator Error:", e);
-                },
-            });
-            jsnes.Browser.loadROMFromURL("game.nes", function (err, data) {
-                if (err) {
-                    console.error("Failed to fetch ROM file:", err);
-                    return;
+            const canvas = document.getElementById("nes");
+            const ctx = canvas.getContext("2d");
+            const imageData = ctx.createImageData(256, 240);
+
+            // 1. Map keyboard keys to native JSNES controller codes
+            const KEYS = {
+                38: jsnes.Controller.BUTTON_UP,      // Arrow Up
+                40: jsnes.Controller.BUTTON_DOWN,    // Arrow Down
+                37: jsnes.Controller.BUTTON_LEFT,    // Arrow Left
+                39: jsnes.Controller.BUTTON_RIGHT,   // Arrow Right
+                88: jsnes.Controller.BUTTON_A,       // X Key
+                90: jsnes.Controller.BUTTON_B,       // Z Key
+                13: jsnes.Controller.BUTTON_START,   // Enter
+                16: jsnes.Controller.BUTTON_SELECT   // Shift
+            };
+
+            // 2. Initialize core engine, bypassing the restrictive Browser UI wrapper
+            const nes = new jsnes.NES({
+                onFrame: function (buffer) {
+                    const data = imageData.data;
+                    let pixel, r, g, b;
+                    
+                    // Direct bitmask injection for full 256x240 frame array 
+                    for (let i = 0; i < buffer.length; i++) {
+                        pixel = buffer[i];
+                        r = pixel & 0xff;
+                        g = (pixel >> 8) & 0xff;
+                        b = (pixel >> 16) & 0xff;
+
+                        data[i * 4]     = r; // Red
+                        data[i * 4 + 1] = g; // Green
+                        data[i * 4 + 2] = b; // Blue
+                        data[data[i * 4 + 3] = 0xff]; // Alpha (Opacity)
+                    }
+                    ctx.putImageData(imageData, 0, 0);
                 }
-                browser.loadROM(data);
             });
+
+            // 3. Map Listeners for Player 1 Controls
+            window.addEventListener("keydown", (e) => {
+                if (KEYS[e.keyCode] !== undefined) {
+                    nes.buttonDown(1, KEYS[e.keyCode]);
+                    e.preventDefault();
+                }
+            });
+            window.addEventListener("keyup", (e) => {
+                if (KEYS[e.keyCode] !== undefined) {
+                    nes.buttonUp(1, KEYS[e.keyCode]);
+                    e.preventDefault();
+                }
+            });
+
+            // 4. Manual Frame Loop at 60 FPS
+            function stepFrame() {
+                nes.frame();
+                requestAnimationFrame(stepFrame);
+            }
+
+            // 5. Fetch binary ROM stream and boot the core loop
+            fetch("game.nes")
+                .then(response => {
+                    if (!response.ok) throw new Error("ROM not found");
+                    return response.arrayBuffer();
+                })
+                .then(buffer => {
+                    // Convert ArrayBuffer payload to binary string array for JSNES core compiler
+                    const bytes = new Uint8Array(buffer);
+                    let romData = "";
+                    for (let i = 0; i < bytes.length; i++) {
+                        romData += String.fromCharCode(bytes[i]);
+                    }
+                    
+                    nes.loadROM(romData);
+                    requestAnimationFrame(stepFrame); // Run frame calculations
+                })
+                .catch(err => {
+                    console.error("Initialization Failed:", err);
+                });
         };
     </script>
 
