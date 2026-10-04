@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Play My NES Game (Full Frame)</title>
-    <script type="text/javascript" src="https://unpkg.com"></script>
+    <!-- Load the JSNES Core Emulator Module -->
+    <script type="text/javascript" src="https://unpkg.com/jsnes@2/dist/jsnes.min.js"></script>
     <style>
         body {
             background-color: #111;
@@ -16,12 +17,13 @@
         
         #nes-container {
             box-sizing: border-box; 
-            width: 512px;
-            height: 480px;
+            width: 512px;  /* 256 * 2 */
+            height: 480px; /* 240 * 2 */
             margin: 0 auto;
             border: 4px solid #333;
             background: black;
             overflow: hidden;
+            position: relative;
         }
 
         #nes-canvas {
@@ -30,6 +32,15 @@
             display: block;
             image-rendering: pixelated;
             image-rendering: crisp-edges;
+        }
+
+        #status {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 18px;
+            color: #888;
         }
 
         .controls {
@@ -44,7 +55,8 @@
     <h1>My Full-Frame NES Hack</h1>
     
     <div id="nes-container">
-        <canvas id="nes-canvas" width="256" height="240"></canvas>
+        <div id="status">Loading Game...</div>
+        <canvas id="nes-canvas" width="256" height="240" style="display:none;"></canvas>
     </div>
 
     <div class="controls">
@@ -55,30 +67,32 @@
         window.onload = function () {
             var canvas = document.getElementById("nes-canvas");
             var ctx = canvas.getContext("2d");
+            var statusDiv = document.getElementById("status");
             
-
+            // 1. Initialize image canvas buffers
             var imageData = ctx.createImageData(256, 240);
-            var buf32 = new Uint32Array(imageData.data.buffer);
+            // Pre-fill the alpha channel to make the screen opaque
+            for (var i = 3; i < imageData.data.length; i += 4) {
+                imageData.data[i] = 0xFF;
+            }
 
-
+            // 2. Initialize the base JSNES Engine
             var nes = new jsnes.NES({
                 onFrame: function(buffer) {
-    
-                    var i = 0;
-                    for (var y = 0; y < 240; y++) {
-                        for (var x = 0; x < 256; x++) {
-                            var color = buffer[i++];
-                    
-                            buf32[y * 256 + x] = 0xFF000000 | color;
-                        }
+                    var data = imageData.data;
+                    var pixelCount = 256 * 240;
+                    for (var i = 0; i < pixelCount; i++) {
+                        var color = buffer[i];
+                        var index = i * 4;
+                        data[index]     = (color & 0x0000FF);       // R
+                        data[index + 1] = (color & 0x00FF00) >> 8;  // G
+                        data[index + 2] = (color & 0xFF0000) >> 16; // B
                     }
                     ctx.putImageData(imageData, 0, 0);
-                },
-                onAudioSample: function(left, right) {
-   
                 }
             });
 
+            // 3. Map standard keyboard listeners
             var KEYS = {
                 38: jsnes.Controller.BUTTON_UP,      // Arrow Up
                 40: jsnes.Controller.BUTTON_DOWN,    // Arrow Down
@@ -104,22 +118,35 @@
                 }
             });
 
-
+            // 4. Fetch the ROM and accurately parse it as a binary byte string
             fetch("game.nes")
-                .then(response => response.arrayBuffer())
+                .then(response => {
+                    if (!response.ok) throw new Error("Could not find game.nes");
+                    return response.arrayBuffer();
+                })
                 .then(buffer => {
-                    var binary = "";
                     var bytes = new Uint8Array(buffer);
-                    for (var i = 0; i < bytes.byteLength; i++) {
-                        binary += String.fromCharCode(bytes[i]);
+                    var binaryStr = "";
+                    // Safely bundle the chunks into a string format JSNES reads natively
+                    var chunkSize = 0xffff;
+                    for (var i = 0; i < bytes.length; i += chunkSize) {
+                        binaryStr += String.fromCharCode.apply(null, bytes.subarray(i, i + chunkSize));
                     }
                     
-  
-                    nes.loadROM(binary);
+                    // Boot the core loop engine
+                    nes.loadROM(binaryStr);
 
+                    // Clear status screen and display viewport canvas
+                    statusDiv.style.display = "none";
+                    canvas.style.display = "block";
+
+                    // Run loop at 60 Frames Per Second
                     setInterval(nes.frame, 1000 / 60);
                 })
-                .catch(err => console.error("Error loading ROM file:", err));
+                .catch(err => {
+                    console.error("Error loading ROM file:", err);
+                    statusDiv.innerText = "Error: Make sure 'game.nes' is in your repo root folder.";
+                });
         };
     </script>
 
