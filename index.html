@@ -38,23 +38,7 @@
 
        <script type="text/javascript">
 
-         try {
-            // EmulatorJS stores active settings inside 'retroarch-options'
-            let raOptions = localStorage.getItem('retroarch-options');
-            
-            // If it doesn't exist yet, create a default blank object structure
-            raOptions = raOptions ? JSON.parse(raOptions) : {};
-
-            // Inject the zero-mask variables directly into the simulated core settings
-            raOptions["nestopia_overscan_v_top"] = "0";
-            raOptions["nestopia_overscan_v_bottom"] = "0";
-            raOptions["nestopia_overscan_h"] = "0";
-
-            // Save our forced configuration straight back into the browser's hardware memory
-            localStorage.setItem('retroarch-options', JSON.stringify(raOptions));
-        } catch (e) {
-            console.error("Cache injection failed:", e);
-        }
+    
 
         // Global configuration variables 
         EJS_player = '#game';
@@ -63,6 +47,11 @@
         
         // Correct CDN data path (Requires a trailing slash)
         EJS_pathtodata = 'https://cdn.emulatorjs.org/stable/data/'; 
+
+         EJS_Settings = {
+    "nestopia_overscan_v_top": "0",
+    "nestopia_overscan_v_bottom": "0"
+  };
         
     </script>
     
