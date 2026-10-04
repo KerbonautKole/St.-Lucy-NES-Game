@@ -36,25 +36,22 @@
         <div id="game"></div>
     </div>
 
-    <script type="text/javascript">
-        try {
-            // Helper function to dynamically modify and save settings objects
-            function forceZeroOverscan(key) {
-                let data = localStorage.getItem(key);
-                data = data ? JSON.parse(data) : {};
-                
-                // Hardcode zero-mask parameters exactly how Nestopia reads them
-                data["nestopia_overscan_v_top"] = "0";
-                data["nestopia_overscan_v_bottom"] = "0";
-                data["nestopia_overscan_h"] = "0";
-                
-                localStorage.setItem(key, JSON.stringify(data));
-            }
+       <script type="text/javascript">
 
-            // Target BOTH core configuration keys discovered in step 5
-            forceZeroOverscan("retroarch-options");
-            forceZeroOverscan("ejs-1-nes-game.nes-settings");
+         try {
+            // EmulatorJS stores active settings inside 'retroarch-options'
+            let raOptions = localStorage.getItem('retroarch-options');
+            
+            // If it doesn't exist yet, create a default blank object structure
+            raOptions = raOptions ? JSON.parse(raOptions) : {};
 
+            // Inject the zero-mask variables directly into the simulated core settings
+            raOptions["nestopia_overscan_v_top"] = "0";
+            raOptions["nestopia_overscan_v_bottom"] = "0";
+            raOptions["nestopia_overscan_h"] = "0";
+
+            // Save our forced configuration straight back into the browser's hardware memory
+            localStorage.setItem('retroarch-options', JSON.stringify(raOptions));
         } catch (e) {
             console.error("Cache injection failed:", e);
         }
@@ -62,14 +59,16 @@
         // Global configuration variables 
         EJS_player = '#game';
         EJS_core = 'nestopia';
-        EJS_gameUrl = 'game.nes'; 
+        EJS_gameUrl = 'game.nes'; // Ensure 'game.nes' is committed to your main repository folder
         
         // Correct CDN data path (Requires a trailing slash)
-        EJS_pathtodata = 'https://emulatorjs.org'; 
+        EJS_pathtodata = 'https://cdn.emulatorjs.org/stable/data/'; 
+        
     </script>
     
     <!-- Correct script source URL -->
-    <script src="https://emulatorjs.orgloader.js"></script>
+    <script src="https://cdn.emulatorjs.org/stable/data/loader.js"></script>
+
 
 </body>
 </html>
