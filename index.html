@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Play My NES Game</title>
-    <!-- Load the JSNES emulator directly from a public CDN -->
+    <title>St. Lucy's NES Game</title>
     <script type="text/javascript" src="https://unpkg.com/jsnes@2/dist/jsnes.min.js"></script>
     <style>
         body {
@@ -29,33 +28,24 @@
     </style>
 </head>
 <body>
-
-    <h1>My Awesome NES Hack</h1>
-    
-    <!-- This container is where JSNES will automatically insert the screen -->
+    <h1>St. Lucy's Home for Girls Raised by Wolves: The NES Game</h1>
     <div id="nes"></div>
-
     <div class="controls">
-        <p><strong>Controls:</strong> D-Pad = Arrow Keys | A = X | B = Z | Select = Right Shift | Start = Enter</p>
+        <p><strong>Controls:</strong> Up, Down, Left, Right = Arrow Keys | Interact with Switches = X | Pause/Continue = Enter</p>
     </div>
-
     <script>
         window.onload = function () {
-            // 1. Initialize the JSNES UI wrapper bound to our div
             var browser = new jsnes.Browser({
                 container: document.getElementById("nes"),
                 onError: function (e) {
                     console.error("Emulator Error:", e);
                 },
             });
-
-            // 2. Fetch and execute your local ROM file automatically 
             jsnes.Browser.loadROMFromURL("game.nes", function (err, data) {
                 if (err) {
                     console.error("Failed to fetch ROM file:", err);
                     return;
                 }
-                // Boot the game data
                 browser.loadROM(data);
             });
         };
