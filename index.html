@@ -36,18 +36,19 @@
         <div id="game"></div>
     </div>
 
-    <script type="text/javascript">
-        // Global variables MUST be declared before loading loader.js
+       <script type="text/javascript">
+        // Global configuration variables 
         EJS_player = '#game';
         EJS_core = 'nes';
-        EJS_gameUrl = 'game.nes'; // Ensure game.nes is in the exact same folder
+        EJS_gameUrl = 'game.nes'; // Ensure 'game.nes' is committed to your main repository folder
         
-        // Use the official updated EmulatorJS domain route
-        EJS_pathtodata = 'https://emulatorjs.org'; 
+        // Correct CDN data path (Requires a trailing slash)
+        EJS_pathtodata = 'https://cdn.emulatorjs.org/stable/data/'; 
     </script>
     
-    <!-- Load the matching script from the exact same CDN host -->
-    <script src="https://emulatorjs.orgloader.js"></script>
+    <!-- Correct script source URL -->
+    <script src="https://cdn.emulatorjs.org/stable/data/loader.js"></script>
+
 
 </body>
 </html>
