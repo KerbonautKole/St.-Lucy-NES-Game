@@ -12,7 +12,7 @@
             text-align: center;
             padding-top: 40px;
         }
-        /* Wrap the player to force perfect 4:3 integer scaling blocks */
+        /* Lock layout bounds cleanly */
         .game-wrapper {
             width: 640px;
             height: 480px;
@@ -20,6 +20,7 @@
             margin: 0 auto;
             border: 4px solid #333;
             background: black;
+            position: relative;
         }
         #game {
             width: 100%;
@@ -36,16 +37,17 @@
     </div>
 
     <script type="text/javascript">
-        // EmulatorJS Global Configuration Options
+        // Global variables MUST be declared before loading loader.js
         EJS_player = '#game';
-        EJS_core = 'nes'; // Loads the optimized RetroArch NES core
-        EJS_gameUrl = 'game.nes'; // Path to your ROM file
+        EJS_core = 'nes';
+        EJS_gameUrl = 'game.nes'; // Ensure game.nes is in the exact same folder
         
-        // Point this to your local EmulatorJS data directory or a public CDN hosting the WASM files
-        EJS_pathtodata = 'https://jsdelivr.net'; 
+        // Use the official updated EmulatorJS domain route
+        EJS_pathtodata = 'https://emulatorjs.org'; 
     </script>
-    <!-- Load the official EmulatorJS loader script -->
-    <script src="https://jsdelivr.netloader.js"></script>
+    
+    <!-- Load the matching script from the exact same CDN host -->
+    <script src="https://emulatorjs.orgloader.js"></script>
 
 </body>
 </html>
