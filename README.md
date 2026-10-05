@@ -1,5 +1,5 @@
 # St.-Lucy-NES-Game
-An NES Puzzle Game Based off the short story "St. Lucy's Home for Girls Raised by Wolves" by Karen Russell. Made as a school project. The ROM should be compatible with original hardware and emulators. If you haven't read the story, I suggest you do so before playing.
+A short NES Puzzle Game Based off the short story "St. Lucy's Home for Girls Raised by Wolves" by Karen Russell. Made as a school project. The ROM should be compatible with original hardware and emulators. If you haven't read the story, I suggest you do so before playing.
 
 I tried to experiment with each 5 levels, basing each one off a different part.
 
