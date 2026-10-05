@@ -14,8 +14,6 @@ Stage 4: Puzzles
 
 Stage 5: Epilogue
 
-Notice that the levels in Stages 1 and 5 are the same, but in reverse, which I chose to do because it shows you returning home.
-
 # Screenshots
 
 <img width="324" height="304" alt="Screenshot 2026-10-05 111150" src="https://github.com/user-attachments/assets/2ed15c5e-5140-4ec1-8dd0-e41698857063" />
