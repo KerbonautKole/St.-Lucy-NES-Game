@@ -21,3 +21,5 @@ Stage 5: Epilogue
 <img width="328" height="299.5" alt="Screenshot 2026-10-05 111744" src="https://github.com/user-attachments/assets/7be983f0-da5b-4d9e-8e5d-80b1ed53a7d5" />
 
 <img width="327.5" height="304" alt="Screenshot 2026-10-05 111846" src="https://github.com/user-attachments/assets/bf771eee-1056-426c-bc24-6cecb53ad861" />
+
+<img width="318.5" height="292.5" alt="Screenshot 2026-10-05 114617" src="https://github.com/user-attachments/assets/d0ddfb63-0bc7-4c6d-96d9-64a606ca7b4a" />
