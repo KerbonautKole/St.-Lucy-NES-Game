@@ -12,7 +12,6 @@
             text-align: center;
             padding-top: 40px;
         }
-        /* Lock layout bounds cleanly */
         .game-wrapper {
             width: 640px;
             height: 480px;
@@ -29,34 +28,19 @@
     </style>
 </head>
 <body>
-
-    
     <div class="game-wrapper">
         <div id="game"></div>
     </div>
-
        <script type="text/javascript">
-
-    
-
-        // Global configuration variables 
         EJS_player = '#game';
         EJS_core = 'nestopia';
-        EJS_gameUrl = 'game.nes'; // Ensure 'game.nes' is committed to your main repository folder
-        
-        // Correct CDN data path (Requires a trailing slash)
+        EJS_gameUrl = 'game.nes'; 
         EJS_pathtodata = 'https://cdn.emulatorjs.org/stable/data/'; 
-
-         EJS_coreSettings = {
-    "nestopia_overscan_v_top": "0",
-    "nestopia_overscan_v_bottom": "0"
-  };
-        
+        EJS_coreSettings = {
+            "nestopia_overscan_v_top": "0",
+            "nestopia_overscan_v_bottom": "0"
+        };
     </script>
-    
-    <!-- Correct script source URL -->
     <script src="https://cdn.emulatorjs.org/stable/data/loader.js"></script>
-
-
 </body>
 </html>
